@@ -1,0 +1,214 @@
+Imports System.IO
+Imports System.Windows.Forms
+Imports System.Drawing
+
+Public Class frmSalesForm
+    Inherits Form
+
+    ' Controls
+    Private txtCustomerName As New TextBox()
+    Private cboProduct As New ComboBox()
+    Private btnProcess As New Button()
+    Private lblOutput As New Label()
+
+    ' Constants
+    Const VAT_Rate As Double = 0.15
+    Const Commission_Rate As Double = 0.05
+
+    ' === MAIN METHOD — Everything here ===
+    Public Shared Sub Main()
+        Application.EnableVisualStyles()
+        Application.SetCompatibleTextRenderingDefault(False)
+        Application.Run(New frmSalesForm())
+    End Sub
+
+    Public Sub New()
+        ' Form setup
+        Text = "Mattress Sales Calculator"
+        Size = New Size(420, 380)
+        StartPosition = FormStartPosition.CenterScreen
+        FormBorderStyle = FormBorderStyle.FixedDialog
+
+        ' Label: Customer Name
+        Dim lblName As New Label() With {
+            .Text = "Customer Name:",
+            .Location = New Point(20, 20),
+            .AutoSize = True
+        }
+        Controls.Add(lblName)
+
+        ' TextBox: Customer Name
+        txtCustomerName.Location = New Point(20, 45)
+        txtCustomerName.Size = New Size(350, 30)
+        Controls.Add(txtCustomerName)
+
+        ' Label: Select Product
+        Dim lblProduct As New Label() With {
+            .Text = "Select Mattress:",
+            .Location = New Point(20, 90),
+            .AutoSize = True
+        }
+        Controls.Add(lblProduct)
+
+        ' ComboBox: Mattress Products
+        cboProduct.Location = New Point(20, 115)
+        cboProduct.Size = New Size(350, 30)
+        cboProduct.DropDownStyle = ComboBoxStyle.DropDownList
+        ' Add products with prices
+        cboProduct.Items.Add("Cozy Nights Monarch|8999")
+        cboProduct.Items.Add("Restonic Barbados|7499")
+        cboProduct.Items.Add("Sealy Phuket|11999")
+        Controls.Add(cboProduct)
+
+        ' Process Button
+        btnProcess.Text = "Process Sale"
+        btnProcess.Location = New Point(20, 170)
+        btnProcess.Size = New Size(350, 40)
+        AddHandler btnProcess.Click, AddressOf Me.btnProcess_Click
+        Controls.Add(btnProcess)
+
+        ' Output Label
+        lblOutput.Location = New Point(20, 230)
+        lblOutput.Size = New Size(350, 110)
+        lblOutput.BorderStyle = BorderStyle.FixedSingle
+        lblOutput.Font = New Font("Consolas", 9)
+        Controls.Add(lblOutput)
+    End Sub
+
+    Private Sub btnProcess_Click(sender As Object, e As EventArgs)
+        ' Capture inputs
+        Dim customerName As String = txtCustomerName.Text.Trim()
+        Dim selectedItem As String = If(cboProduct.SelectedItem IsNot Nothing, cboProduct.SelectedItem.ToString(), "")
+
+        ' Validation
+        If String.IsNullOrEmpty(customerName) Or String.IsNullOrEmpty(selectedItem) Then
+            MessageBox.Show("Please enter the customer name and select a product.", "Missing Information", MessageBoxButtons.OK, MessageBoxIcon.Warning)
+            Return
+        End If
+
+        ' Extract product name and price
+        Dim parts() As String = selectedItem.Split("|"c)
+        Dim productName As String = parts(0).Trim()
+        Dim price As Double = CDbl(parts(1).Trim())
+
+        ' Calculations
+        Dim vat As Double = price * VAT_Rate
+        Dim commission As Double = price * Commission_Rate
+        Dim total As Double = price + vat
+
+        ' Display results
+        lblOutput.Text = "=== SALE SUMMARY ===" & vbCrLf &
+                         "Customer:  " & customerName & vbCrLf &
+                         "Product:   " & productName & vbCrLf &
+                         "Price:     R" & price.ToString("0.00") & vbCrLf &
+                         "VAT (15%): R" & vat.ToString("0.00") & vbCrLf &
+                         "Commission:R" & commission.ToString("0.00") & vbCrLf &
+                         "TOTAL:     R" & total.ToString("0.00")
+
+        ' Save to data.txt
+        Dim filePath As String = Path.Combine(Application.StartupPath, "data.txt")
+        Using writer As StreamWriter = File.AppendText(filePath)
+            writer.WriteLine("Date/Time: " & Now.ToString("yyyy-MM-dd HH:mm:ss"))
+            writer.WriteLine("Customer:  " & customerName)
+            writer.WriteLine("Product:   " & productName)
+            writer.WriteLine("Price:     R" & price.ToString("0.00"))
+            writer.WriteLine("VAT:       R" & vat.ToString("0.00"))
+            writer.WriteLine("Commission:R" & commission.ToString("0.00"))
+            writer.WriteLine("Total:     R" & total.ToString("0.00"))
+            writer.WriteLine("----------------------------------------")
+        End Using
+
+        MessageBox.Show("Sale saved to:" & vbCrLf & filePath, "Sale Processed", MessageBoxButtons.OK, MessageBoxIcon.Information)
+
+        ' Reset inputs
+        txtCustomerName.Clear()
+        cboProduct.SelectedIndex = -1
+    End Sub
+
+End Module
+/*
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+ * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JDialog.java to edit this template
+ */
+
+/**
+ *
+ * @author Student
+ */
+public class Form extends javax.swing.JDialog {
+    
+    private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(Form.class.getName());
+
+    /**
+     * Creates new form Form
+     */
+    public Form(java.awt.Frame parent, boolean modal) {
+        super(parent, modal);
+        initComponents();
+    }
+
+    /**
+     * This method is called from within the constructor to initialize the form.
+     * WARNING: Do NOT modify this code. The content of this method is always
+     * regenerated by the Form Editor.
+     */
+    @SuppressWarnings("unchecked")
+    // <editor-fold defaultstate="collapsed" desc="Generated Code">                          
+    private void initComponents() {
+
+        setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
+
+        javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
+        getContentPane().setLayout(layout);
+        layout.setHorizontalGroup(
+            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 400, Short.MAX_VALUE)
+        );
+        layout.setVerticalGroup(
+            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 300, Short.MAX_VALUE)
+        );
+
+        pack();
+    }// </editor-fold>                        
+
+    /**
+     * @param args the command line arguments
+     */
+    public static void main(String args[]) {
+        /* Set the Nimbus look and feel */
+        //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
+        /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
+         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
+         */
+        try {
+            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
+                if ("Nimbus".equals(info.getName())) {
+                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
+                    break;
+                }
+            }
+        } catch (ReflectiveOperationException | javax.swing.UnsupportedLookAndFeelException ex) {
+            logger.log(java.util.logging.Level.SEVERE, null, ex);
+        }
+        //</editor-fold>
+
+        /* Create and display the dialog */
+        java.awt.EventQueue.invokeLater(new Runnable() {
+            @Override
+            public void run() {
+                Form dialog = new Form(new javax.swing.JFrame(), true);
+                dialog.addWindowListener(new java.awt.event.WindowAdapter() {
+                    @Override
+                    public void windowClosing(java.awt.event.WindowEvent e) {
+                        System.exit(0);
+                    }
+                });
+                dialog.setVisible(true);
+            }
+        });
+    }
+
+    // Variables declaration - do not modify                     
+    // End of variables declaration                   
+}
